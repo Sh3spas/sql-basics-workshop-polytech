@@ -1,0 +1,21 @@
+Étape 8 : Conclusion et analyse des performances
+
+1. Quels index ont eu le plus d'impact ?
+
+L'index ayant eu le plus fort impact sur le temps d'exécution est idx_stream_id_streamer.
+En comparant les plans d'exécution visuels (avant et après indexation), on constate que le balayage séquentiel massif (Seq Scan) sur la table stream constituait le principal goulot d'étranglement. 
+La création de l'index a permis de remplacer ce balayage complet par un accès direct (Index Scan), réduisant drastiquement la quantité de données lues et traitées lors de la jointure.
+
+2. Pourquoi les jointures sur participation_defi étaient lentes sans index ?
+Sans index sur les clés de liaison, le moteur PostgreSQL est dans l'incapacité de cibler les lignes pertinentes. 
+Pour effectuer la jointure entre les streamers et leurs défis, le SGBD est donc forcé de parcourir l'intégralité de la table participation_defi ligne par ligne (Seq Scan) pour construire ses tables de hachage en mémoire. 
+Cela revient à devoir lire un dictionnaire entier page par page pour trouver un mot, plutôt que d'utiliser le sommaire.
+
+3. Quel est le gain de performance global (en %) ?
+D'après les relevés des temps d'exécution inclus dans les captures d'écran :
+
+    Temps d'exécution SANS index : ~250,66 ms
+
+    Temps d'exécution AVEC index : ~178,92 ms
+
+Cela représente une amélioration du temps d'exécution d'environ 28,6 %.
