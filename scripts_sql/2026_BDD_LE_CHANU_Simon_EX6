@@ -1,0 +1,50 @@
+SELECT s.pseudo,
+COUNT(p.id_defi) AS nombre_defis
+FROM streamer s
+JOIN participation_defi p ON s.id_streamer = p.id_streamer
+GROUP BY s.id_streamer, s.pseudo;
+
+SELECT 
+	d.intitule,
+	d.montant_palier
+FROM defi d
+WHERE NOT EXISTS (
+	SELECT 1 FROM participation_defi p
+	WHERE p.id_defi = d.id_defi
+)
+
+SELECT
+	d.intitule,
+	d.montant_palier,
+	COUNT(p.id_streamer) AS nombre_participant
+FROM defi d
+LEFT JOIN participation_defi p ON d.id_defi = p.id_defi
+GROUP BY d.id_defi, d.intitule, d.montant_palier
+HAVING COUNT(p.id_streamer) > 2;
+
+
+SELECT 
+    s.pseudo, 
+    COUNT(p.id_defi) AS nombre_defis, 
+    SUM(d.montant_palier) AS montant_total
+FROM Streamer s
+JOIN Participation_Defi p ON s.id_streamer = p.id_streamer
+JOIN Defi d ON p.id_defi = d.id_defi
+GROUP BY s.id_streamer, s.pseudo
+ORDER BY montant_total DESC;
+
+
+SELECT 
+    s.pseudo, 
+    c.date_debut_autorisee, 
+    c.date_fin_autorisee, 
+    COUNT(st.id_stream) AS nombre_streams
+FROM Streamer s
+JOIN Creneau c ON s.id_streamer = c.id_streamer
+LEFT JOIN Stream st ON c.id_creneau = st.id_creneau
+GROUP BY 
+    s.id_streamer, 
+    s.pseudo, 
+    c.id_creneau, 
+    c.date_debut_autorisee, 
+    c.date_fin_autorisee;

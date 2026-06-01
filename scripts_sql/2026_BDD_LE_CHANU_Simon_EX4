@@ -1,0 +1,28 @@
+SELECT s.pseudo, COALESCE(COUNT(st.id_stream),0) AS nombre_de_stream
+FROM streamer s
+LEFT JOIN stream st ON s.id_streamer = st.id_streamer
+GROUP BY s.id_streamer, s.pseudo
+ORDER BY nombre_de_stream DESC;
+
+
+SELECT etat_validation,
+		SUM(montant_palier) AS montant_total
+		FROM defi
+		GROUP BY etat_validation;
+
+SELECT s.pseudo, COALESCE(COUNT(p.id_defi),0) as nombre_defi
+FROM streamer s
+JOIN participation_defi p ON s.id_streamer = p.id_streamer
+GROUP BY s.id_streamer, s.pseudo
+HAVING COUNT(p.id_defi) >= 2;
+
+
+SELECT titre, (EXTRACT(EPOCH FROM (heure_fin - heure_debut)) / 3600) AS duree_stream_heures, 
+	AVG(EXTRACT(EPOCH FROM (heure_fin - heure_debut)) / 3600) OVER() AS duree_moyenne_globale
+	FROM Stream
+
+
+SELECT
+	s.pseudo,st.titre,st.heure_debut
+	FROM Streamer s
+	JOIN stream st ON s.id_streamer = st.id_streamer;
